@@ -26,8 +26,8 @@ const SignupForm = () => {
         password,
         phone
       });
-      const { token } = response.data;
-      signup(token)
+      const { token, _id } = response.data;
+      signup(token, {firstName, lastName, email, phone, id:_id})
       alert("Signup successful!");
       navigate("/");  // Redirect to home page
 

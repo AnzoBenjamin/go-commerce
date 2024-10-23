@@ -4,14 +4,15 @@ import (
 	"log"
 	"os"
 	"time"
-	"github.com/akhil/ecommerce-yt/controllers"
-	"github.com/akhil/ecommerce-yt/database"
-	"github.com/akhil/ecommerce-yt/middleware"
-	"github.com/akhil/ecommerce-yt/routes"
-	
-	"github.com/gin-gonic/gin"
+
+	"github.com/AnzoBenjamin/go-commerce/tree/main/backend/controllers"
+	"github.com/AnzoBenjamin/go-commerce/tree/main/backend/database"
+	"github.com/AnzoBenjamin/go-commerce/tree/main/backend/middleware"
+	"github.com/AnzoBenjamin/go-commerce/tree/main/backend/routes"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {

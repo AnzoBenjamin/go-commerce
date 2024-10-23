@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from "react";
 
+import PropTypes from 'prop-types';
 // Create context
 const AuthContext = createContext();
-import PropTypes from 'prop-types';
 
 
 // Create a custom hook for accessing the context
@@ -13,10 +13,13 @@ export const AuthProvider = ({ children }) => {
     AuthProvider.propTypes = {
         children: PropTypes.node.isRequired,
       };
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [user, setUser] = useState(null);
 
-  const login = (token) => {
+
+  const login = (token, userData) => {
     setToken(token);
+    setUser(userData)
     localStorage.setItem("token", token);
   };
 
@@ -24,12 +27,13 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem("token");
   };
-  const signup = (token) => {
+  const signup = (token, userData) => {
     setToken(token);
+    setUser(userData)
     localStorage.setItem("token", token);
   };
   return (
-    <AuthContext.Provider value={{ token, login, logout,signup }}>
+    <AuthContext.Provider value={{ token, login, logout,signup, user }}>
       {children}
     </AuthContext.Provider>
   );

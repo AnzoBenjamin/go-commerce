@@ -2,14 +2,14 @@ package controllers
 
 import (
 	"context"
-	"fmt"
+
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/akhil/ecommerce-yt/database"
-	"github.com/akhil/ecommerce-yt/models"
-	generate "github.com/akhil/ecommerce-yt/tokens"
+	"github.com/AnzoBenjamin/go-commerce/tree/main/backend/database"
+	"github.com/AnzoBenjamin/go-commerce/tree/main/backend/models"
+	generate "github.com/AnzoBenjamin/go-commerce/tree/main/backend/tokens"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -32,11 +32,11 @@ func HashPassword(password string) string {
 }
 
 func VerifyPassword(userpassword string, givenpassword string) (bool, string) {
-	err := bcrypt.CompareHashAndPassword([]byte(givenpassword), []byte(userpassword))
+	err := bcrypt.CompareHashAndPassword([]byte(userpassword), []byte(givenpassword))  // Fix: Correct argument order
 	valid := true
 	msg := ""
 	if err != nil {
-		msg = "Login Or Passowrd is Incorerct"
+		msg = "Login Or Password is Incorrect"
 		valid = false
 	}
 	return valid, msg
@@ -106,30 +106,42 @@ func Login() gin.HandlerFunc {
 		defer cancel()
 		var user models.User
 		var founduser models.User
+		
+		// Parse the JSON input
 		if err := c.BindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err})
 			return
 		}
+		
+		// Check if user exists in the database
 		err := UserCollection.FindOne(ctx, bson.M{"email": user.Email}).Decode(&founduser)
-		defer cancel()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "login or password incorrect"})
 			return
 		}
-		PasswordIsValid, msg := VerifyPassword(*user.Password, *founduser.Password)
-		defer cancel()
-		if !PasswordIsValid {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
-			fmt.Println(msg)
+		
+		// Ensure passwords are not nil before comparing
+		if user.Password == nil || founduser.Password == nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "password cannot be empty"})
 			return
 		}
+		
+		// Verify the password
+		PasswordIsValid, msg := VerifyPassword(*founduser.Password, *user.Password)  // Corrected comparison
+		if !PasswordIsValid {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": msg})  // 401 Unauthorized for invalid password
+			return
+		}
+		
+		// Generate new tokens and update them
 		token, refreshToken, _ := generate.TokenGenerator(*founduser.Email, *founduser.First_Name, *founduser.Last_Name, founduser.User_ID)
-		defer cancel()
 		generate.UpdateAllTokens(token, refreshToken, founduser.User_ID)
-		c.JSON(http.StatusFound, founduser)
-
+		
+		// Return the user details with success status
+		c.JSON(http.StatusOK, founduser)  // 200 OK for successful login
 	}
 }
+
 
 func ProductViewerAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {

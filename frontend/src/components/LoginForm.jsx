@@ -15,8 +15,10 @@ const LoginForm = () => {
     console.log(email, password)
     try {
       const response = await axios.post("http://localhost:8000/users/login", { email, password });
-      const { token } = response.data;
-      login(token);  // Call the login method to set the token globally
+      console.log(response)
+      const { token, user_id, first_name, last_name } = response.data;
+      const userData = {user_id, first_name, last_name}
+      login(token, userData);  // Call the login method to set the token globally
       alert("Login successful!");
       navigate("/");  // Redirect to home page
     } catch (err) {

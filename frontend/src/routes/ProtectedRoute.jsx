@@ -7,7 +7,6 @@ const ProtectedRoute = ({ children }) => {
     children: PropTypes.node.isRequired,
   };
 
-  console.log(token)
   const { token } = useAuth();
 
   // If no token exists, redirect to login

@@ -11,7 +11,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/listcart", {
+        const response = await axios.get("http://localhost:8000/api/listcart", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -28,8 +28,8 @@ const Cart = () => {
 
   const removeFromCart = async (productId) => {
     try {
-      await axios.get("http://localhost:8000/removeitem", {
-        params: { product_id: productId },  // Assuming the API expects the product ID as a query parameter
+      await axios.get("http://localhost:8000/api/removeitem", {
+        params: {id: productId },  // Assuming the API expects the product ID as a query parameter
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -44,7 +44,7 @@ const Cart = () => {
 
   const checkout = async () => {
     try {
-      await axios.get("http://localhost:8000/cartcheckout", {
+      await axios.get("http://localhost:8000/api/cartcheckout", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

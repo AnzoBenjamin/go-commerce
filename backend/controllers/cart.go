@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/akhil/ecommerce-yt/database"
-	"github.com/akhil/ecommerce-yt/models"
-
+	"github.com/AnzoBenjamin/go-commerce/tree/main/backend/database"
+	"github.com/AnzoBenjamin/go-commerce/tree/main/backend/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -31,12 +30,13 @@ func NewApplication(prodCollection, userCollection *mongo.Collection) *Applicati
 func (app *Application) AddToCart() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		productQueryID := c.Query("id")
+		userQueryID := c.Query("userID")
+		log.Printf("AddToCart called with productID: %s, userID: %s", productQueryID, userQueryID)
 		if productQueryID == "" {
 			log.Println("product id is empty")
 			_ = c.AbortWithError(http.StatusBadRequest, errors.New("product id is empty"))
 			return
 		}
-		userQueryID := c.Query("userID")
 		if userQueryID == "" {
 			log.Println("user id is empty")
 			_ = c.AbortWithError(http.StatusBadRequest, errors.New("user id is empty"))
